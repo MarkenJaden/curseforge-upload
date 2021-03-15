@@ -163,7 +163,7 @@ async function run() {
                     core.debug(body.toString());
                     core.setOutput("id", JSON.parse(body).id.toString());
                 } else {
-                    core.setFailed(response.statusCode + ": " + response.statusMessage + "\n" + body.toString());
+                    core.setFailed(response.statusCode + ": " + response.statusMessage + "\n" + body.toString() + "\n" + options.toString() + "\n" + options.formData);
                 }
 
             } else {
