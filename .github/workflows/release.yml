@@ -38,7 +38,7 @@ jobs:
           # The subdomain of curseforge.com where the upload request will be made. (minecraft, kerbal, etc.)
           game_endpoint: minecraft
           # The path to the file you want to upload
-          file_path: ./LandOfSignals-${{matrix.branch}}-${{ steps.getversion.outputs.version }}.jar
+          file_path: LandOfSignals-${{matrix.branch}}-${{ steps.getversion.outputs.version }}.jar
           # The changelog text to put on the file. Can be HTML or markdown if changelog_type is set.
           changelog: ${{ steps.getchangelog.outputs.changelog }}
           # The game version IDs to select on this file. Seperate IDs with "," (no quotes). You can specify numerical or slug/name IDs and they will be converted to numerical IDs. For slugs/names with duplicates, you can specify a type by prefixing the name/slug with "(type):" (no quotes). See README for more info.
