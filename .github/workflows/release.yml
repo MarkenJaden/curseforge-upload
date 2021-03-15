@@ -18,9 +18,9 @@ jobs:
         uses: actions/setup-java@v1
         with:
           java-version: 1.8
-      - name: Read CHANGELOG file
+      - name: Read CHANGELOG.md file
         id: getchangelog
-        run: echo "::set-output name=changelog::$(cat CHANGELOG)"
+        run: echo "::set-output name=changelog::$(cat CHANGELOG.md)"
       - name: Read VERSION file
         id: getversion
         run: echo "::set-output name=version::$(cat VERSION)"
@@ -39,6 +39,7 @@ jobs:
           file_path: LandOfSignals-${{matrix.branch}}-${{ steps.getversion.outputs.version }}.jar
           # The changelog text to put on the file. Can be HTML or markdown if changelog_type is set.
           changelog: ${{ steps.getchangelog.outputs.changelog }}
+          changelog_type: markdown
           # The game version IDs to select on this file. Seperate IDs with "," (no quotes). You can specify numerical or slug/name IDs and they will be converted to numerical IDs. For slugs/names with duplicates, you can specify a type by prefixing the name/slug with "(type):" (no quotes). See README for more info.
           game_versions: ${{ matrix.version }}
           # The type of this release. Allowed values: alpha, beta, release

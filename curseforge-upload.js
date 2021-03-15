@@ -154,9 +154,9 @@ async function run() {
             }
         }
         req.post(options, function (err, response, body) {
-            core.debug(body.toString());
-            core.debug(err);
-            core.debug(response);
+            core.info(body.toString());
+            core.info(options.formData.metadata);
+            core.info(options.formData.file.toString());
             if (!err) {
                 core.debug("Response code: " + response.statusCode);
                 if (response.statusCode == 200) {
