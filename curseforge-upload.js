@@ -3,18 +3,18 @@ const fs = require('fs');
 const req = require('request');
 
 async function getGameVersions(token, endpoint) {
-    let gameVersionsString = core.getInput('game_versions', { required: true });
+    let gameVersionsString = core.getInput('game_versions', {required: true});
     let stringList = gameVersionsString.split(',');
     let gameVersions = [];
     let gameVersionNames = {};
-    stringList.forEach(function(valStr, index, array) {
+    stringList.forEach(function (valStr, index, array) {
         if (valStr != null && valStr != "") {
-            if(isID(valStr)) {
+            if (isID(valStr)) {
                 gameVersions.push(parseInt(valStr));
             } else {
-                if(valStr.includes(':')) {
+                if (valStr.includes(':')) {
                     let valStrSp = valStr.split(':');
-                    if(valStrSp.length != 2) {
+                    if (valStrSp.length != 2) {
                         core.setFailed("Invalid game version type id pair: " + valStr + " - Valid Format: typeid:versionid");
                     }
                     gameVersionNames[valStrSp[1]] = valStrSp[0];
@@ -24,7 +24,7 @@ async function getGameVersions(token, endpoint) {
             }
         }
     });
-    if(Object.keys(gameVersionNames).length > 0) {
+    if (Object.keys(gameVersionNames).length > 0) {
         const options = {
             method: "GET",
             url: "https://" + endpoint + ".curseforge.com/api/game/versions",
@@ -44,19 +44,19 @@ async function getGameVersions(token, endpoint) {
                 "X-Api-Token": token
             }
         }
-        const versionTypeData = Object.values(gameVersionNames).filter((v,i,a) => v != "blank").length > 0 ? JSON.parse(await requestPromise(optionsTypes)) : [];
+        const versionTypeData = Object.values(gameVersionNames).filter((v, i, a) => v != "blank").length > 0 ? JSON.parse(await requestPromise(optionsTypes)) : [];
 
-        const filteredVersions = versionData.filter(function(value, index, array) {
+        const filteredVersions = versionData.filter(function (value, index, array) {
 
             let typeId = gameVersionNames.hasOwnProperty(value.name) ? gameVersionNames[value.name] : (gameVersionNames.hasOwnProperty(value.slug) ? gameVersionNames[value.slug] : "");
-            if(typeId != null && typeId != "blank" && typeId != "") {
-                if(isID(typeId)) {
+            if (typeId != null && typeId != "blank" && typeId != "") {
+                if (isID(typeId)) {
                     return typeId == value.gameVersionTypeID;
                 } else {
-                    let result = versionTypeData.filter(function(v, i, a) {
+                    let result = versionTypeData.filter(function (v, i, a) {
                         return v.name == typeId || v.slug == typeId;
                     });
-                    if(result.length != 1) {
+                    if (result.length != 1) {
                         core.setFailed("Cannot evaluate version type id " + typeId);
                     }
                     core.debug("Converted version type " + typeId + " to " + result[0].id)
@@ -65,7 +65,7 @@ async function getGameVersions(token, endpoint) {
             }
             return typeId == "blank";
         });
-        filteredVersions.forEach(function(value, index, array) {
+        filteredVersions.forEach(function (value, index, array) {
             gameVersions.push(value.id);
             core.debug("Converted " + value.slug + " to " + value.id);
         });
@@ -95,25 +95,25 @@ function isID(str) {
 
 async function run() {
     try {
-        const token = core.getInput('token', { required: true });
-        const projectId = core.getInput('project_id', { required: true });
-        const endpoint = core.getInput('game_endpoint', { required: true });
-        const filePath = core.getInput('file_path', { required: true });
+        const token = core.getInput('token', {required: true});
+        const projectId = core.getInput('project_id', {required: true});
+        const endpoint = core.getInput('game_endpoint', {required: true});
+        const filePath = core.getInput('file_path', {required: true});
         if (!fs.existsSync(filePath)) {
             core.setFailed("Specified file at " + filePath + " does not exist!");
         }
-        const changelog = core.getInput('changelog', { required: true });
-        const changelogType = core.getInput('changelog_type', { required: false });
-        const displayName = core.getInput('display_name', { required: false });
-        const parentFileIDStr = core.getInput('parent_file_id', { required: false });
+        const changelog = core.getInput('changelog', {required: true});
+        const changelogType = core.getInput('changelog_type', {required: false});
+        const displayName = core.getInput('display_name', {required: false});
+        const parentFileIDStr = core.getInput('parent_file_id', {required: false});
         const gameVersions = await getGameVersions(token, endpoint);
-        const releaseType = core.getInput('release_type', { required: true });
+        const releaseType = core.getInput('release_type', {required: true});
         if (!(releaseType == "alpha" || releaseType == "beta" || releaseType == "release")) {
             core.setFailed("Invalid release type input! Use alpha, beta, or release!");
         }
-        const relationsString = core.getInput('relations', { required: false });
+        const relationsString = core.getInput('relations', {required: false});
         const projects = [];
-        relationsString.split(',').forEach(function(value, index, array) {
+        relationsString.split(',').forEach(function (value, index, array) {
             if (value != null && value != "") {
                 const projectSplit = value.split(':');
                 projects[index] = {
@@ -137,7 +137,7 @@ async function run() {
             metadata.parentFileID = parseInt(parentFileIDStr);
         }
         if (relationsString != "") {
-            metadata.relations = { projects: projects };
+            metadata.relations = {projects: projects};
         }
         core.debug("Request meta: " + JSON.stringify(metadata));
         const options = {
@@ -153,7 +153,10 @@ async function run() {
                 "metadata": JSON.stringify(metadata)
             }
         }
-        req.post(options, function(err, response, body) {
+        req.post(options, function (err, response, body) {
+            core.debug(body.toString());
+            core.debug(err);
+            core.debug(response);
             if (!err) {
                 core.debug("Response code: " + response.statusCode);
                 if (response.statusCode == 200) {
